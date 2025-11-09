@@ -6,9 +6,9 @@ from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 from keras.models import load_model
 
-# -----------------------------
-# Load ML model & scaler
-# -----------------------------
+
+# DL model + data
+
 model = load_model('Mod16-32-16.keras')  # adjust path if needed
 xData = np.loadtxt("data.csv", delimiter=",")
 yData = xData[:,0]
@@ -16,26 +16,26 @@ xData = xData[:, 1:]
 scaler = MinMaxScaler()
 scaler = scaler.fit(xData)
 
-# -----------------------------
-# Streamlit Page Config
-# -----------------------------
+
+# page config
+
 st.set_page_config(
     page_title="FireSight",
     layout="wide"
 )
 
-# -----------------------------
-# Sidebar
-# -----------------------------
+
+# Sidebar w/ files
+
 st.sidebar.header("Scenario Simulation")
 uploaded_file = st.sidebar.file_uploader(
     "Upload CSV with features: Precipitation, Max Temp, Min Temp, Avg Wind Speed, Year, Temp Range, Wind/Temp Ratio, Lagged Precipitation, Lagged Avg Wind Speed, Day of Year",
     type="csv"
 )
 
-# -----------------------------
-# CSS Styling
-# -----------------------------
+
+# CSS styling
+
 st.markdown("""
 <style>
 body {background: #fff5f0; font-family: 'Arial', sans-serif; color: #333;}
@@ -48,18 +48,18 @@ body {background: #fff5f0; font-family: 'Arial', sans-serif; color: #333;}
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------
-# Header
-# -----------------------------
+
+# header
+
 st.markdown("""
 <div class="header">
     <h1> FireSight</h1>
 </div>
 """, unsafe_allow_html=True)
 
-# -----------------------------
-# Intro / About Section
-# -----------------------------
+
+# about us
+
 st.write("""
 FireSight is a machine learning-based tool designed to predict wildfire risk based on environmental data.
 You can upload a CSV file with the relevant features and visualize predicted fire probabilities,
@@ -73,10 +73,11 @@ st.write("""
 - Friendly column naming for easier analysis
 """)
 st.markdown("[View on GitHub](https://github.com/DeUniversalRoot/CodeThePast-Hackathon-Submission)")
+st.markdown("[Powered by Zenodo](https://zenodo.org/records/14712845)")
 
-# -----------------------------
-# Only run predictions if CSV uploaded
-# -----------------------------
+
+#  predictions from model
+
 if uploaded_file is not None:
     # Load CSV (assume no headers)
     user_data = np.loadtxt(uploaded_file, delimiter=",")
@@ -94,10 +95,10 @@ if uploaded_file is not None:
         else: return "Low"
     
     bye = pd.Series([categorize(p) for p in probs])
+
     
-    # -----------------------------
-    # Risk Overview Cards
-    # -----------------------------
+    # risk overview
+
     st.markdown("## Risk Overview")
     risk_counts = bye.value_counts().reindex(['High','Moderate','Low']).fillna(0)
     total = len(bye)
@@ -115,9 +116,9 @@ if uploaded_file is not None:
     col2.markdown(card_html("🟠 Moderate Risk","orange",risk_counts['Moderate'],risk_percent['Moderate']), unsafe_allow_html=True)
     col3.markdown(card_html("🟢 Low Risk","green",risk_counts['Low'],risk_percent['Low']), unsafe_allow_html=True)
     
-    # -----------------------------
-    # Fire Probability Histogram
-    # -----------------------------
+
+    # bar graph for probability of fire
+
     st.markdown("<h2 class='section-title'>Fire Probability Histogram</h2>", unsafe_allow_html=True)
     bye_df = pd.DataFrame({'fire_probability': probs, 'risk': bye})
     fig_hist = px.histogram(
@@ -132,9 +133,9 @@ if uploaded_file is not None:
     fig_hist.update_layout(transition={'duration':1000})
     st.plotly_chart(fig_hist, use_container_width=True)
     
-    # -----------------------------
-    # Custom Scatter Plot
-    # -----------------------------
+
+    # scatterplot w/ customizable axes
+
     st.markdown("<h2 class='section-title'> Custom Scatter Plot</h2>", unsafe_allow_html=True)
     
     # Assign friendly column names to the uploaded CSV
@@ -165,3 +166,4 @@ if uploaded_file is not None:
     
     fig_scatter.update_layout(transition={'duration':1000})
     st.plotly_chart(fig_scatter, use_container_width=True)
+

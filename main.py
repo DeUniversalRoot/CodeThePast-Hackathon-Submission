@@ -34,10 +34,10 @@ remaining_df = df.drop(sample_df.index)
 sample_df.to_csv("val.csv", index=False)
 remaining_df.to_csv("train.csv", index=False)
 
-xData = np.loadtxt("train.csv", delimiter=",", skiprows=1)
+xData = np.loadtxt("train.csv", delimiter=",")
 yData = xData[:,0]
 xData = xData[:, 1:]
-xEval = np.loadtxt("val.csv", delimiter=",", skiprows=1)
+xEval = np.loadtxt("val.csv", delimiter=",")
 yEval = xEval[:,0]
 xEval = xEval[:, 1:]
 
@@ -69,4 +69,5 @@ plt.title('Model Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
+
 plt.show()
